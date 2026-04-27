@@ -15,12 +15,19 @@ scaler=joblib.load("scaler1.pkl")
 
 #Database connection
 def get_db_connection():
+    url = os.getenv("DATABASE_URL")
+
+    # split the URL
+    import urllib.parse as urlparse
+    urlparse.uses_netloc.append("mysql")
+    parsed = urlparse.urlparse(url)
+
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="food_db",
-        port=3306
+        host=parsed.hostname,
+        user=parsed.username,
+        password=parsed.password,
+        database=parsed.path.lstrip('/'),
+        port=parsed.port
     )
 
 @app.route('/')
